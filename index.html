@@ -6,25 +6,7 @@
   <title>Top Hits of the Day</title>
 </head>
 <body>
-  <h1>Top Hits of the Day</h1>
-  <table id="data"><thead></thead><tbody></tbody></table>
-
-  <script>
-    const CSV_FILE = "baidu-scrape1.csv";
-
-    fetch(CSV_FILE)
-      .then(r => r.text())
-      .then(text => {
-        const rows = text.trim().split("\n").map(line => line.split(","));
-        const header = rows.shift();
-
-        document.querySelector("#data thead").innerHTML =
-          "<tr>" + header.map(h => "<th>" + h + "</th>").join("") + "</tr>";
-
-        document.querySelector("#data tbody").innerHTML = rows.map(cols =>
-          "<tr>" + cols.map(c => "<td>" + c + "</td>").join("") + "</tr>"
-        ).join("");
-      });
-  </script>
+  <iframe title="[ Insert title here ]" aria-label="Table" id="datawrapper-chart-f93Z2" src="https://datawrapper.dwcdn.net/f93Z2/1/" scrolling="no" frameborder="0" style="width: 0; min-width: 100% !important; border: none;" height="9419" data-external="1"></iframe>
+  <script type="text/javascript">(function(){function e(){window.addEventListener(`message`,function(e){if(e.data[`datawrapper-height`]!==void 0){var t=document.querySelectorAll(`iframe`);for(var n in e.data[`datawrapper-height`])for(var r=0,i;i=t[r];r++)if(i.contentWindow===e.source){var a=e.data[`datawrapper-height`][n]+`px`;i.style.height=a}}})}e()})();</script>
 </body>
 </html>
