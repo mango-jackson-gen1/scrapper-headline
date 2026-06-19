@@ -3,73 +3,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>50 Headlines a Day</title>
-  <style>
-    body { font: 15px/1.5 system-ui, sans-serif; margin: 2rem; color: #222; }
-    h1 { font-size: 1.4rem; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { padding: .5rem .6rem; border-bottom: 1px solid #ddd; text-align: left; vertical-align: top; }
-    th { background: #f5f5f5; position: sticky; top: 0; }
-    tr:hover td { background: #fafafa; }
-    td.rank, td.count { white-space: nowrap; }
-    a { color: #1a5fb4; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
+  <title>Top Hits of the Day</title>
 </head>
 <body>
-  <h1>Baidu Headlines</h1>
+  <h1>Top Hits of the Day</h1>
   <table id="data"><thead></thead><tbody></tbody></table>
 
   <script>
     const CSV_FILE = "baidu-scrape1.csv";
 
-    // Minimal RFC-4180 CSV parser (handles quoted fields and embedded commas/newlines).
-    function parseCSV(text) {
-      const rows = [];
-      let row = [], field = "", inQuotes = false;
-      for (let i = 0; i < text.length; i++) {
-        const c = text[i];
-        if (inQuotes) {
-          if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
-          else if (c === '"') inQuotes = false;
-          else field += c;
-        } else if (c === '"') inQuotes = true;
-        else if (c === ",") { row.push(field); field = ""; }
-        else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
-        else if (c !== "\r") field += c;
-      }
-      if (field !== "" || row.length) { row.push(field); rows.push(row); }
-      return rows;
-    }
-
     fetch(CSV_FILE)
       .then(r => r.text())
       .then(text => {
-        const rows = parseCSV(text).filter(r => r.length > 1);
+        const rows = text.trim().split("\n").map(line => line.split(","));
         const header = rows.shift();
-        const linkIdx = header.indexOf("link");
-        const titleIdx = header.indexOf("title");
 
         document.querySelector("#data thead").innerHTML =
-          "<tr>" + header.map(h => `<th>${h}</th>`).join("") + "</tr>";
+          "<tr>" + header.map(h => "<th>" + h + "</th>").join("") + "</tr>";
 
         document.querySelector("#data tbody").innerHTML = rows.map(cols =>
-          "<tr>" + cols.map((cell, i) => {
-            const cls = header[i] === "rank" ? "rank" : header[i] === "count" ? "count" : "";
-            if (i === titleIdx && cols[linkIdx]) {
-              return `<td class="${cls}"><a href="${cols[linkIdx]}" target="_blank" rel="noopener">${cell}</a></td>`;
-            }
-            if (i === linkIdx && cell) {
-              return `<td><a href="${cell}" target="_blank" rel="noopener">link</a></td>`;
-            }
-            return `<td class="${cls}">${cell}</td>`;
-          }).join("") + "</tr>"
+          "<tr>" + cols.map(c => "<td>" + c + "</td>").join("") + "</tr>"
         ).join("");
-      })
-      .catch(err => {
-        document.body.insertAdjacentHTML("beforeend",
-          `<p style="color:#c00">Could not load ${CSV_FILE}: ${err}. ` +
-          `Serve this folder over HTTP (e.g. <code>python3 -m http.server</code>) rather than opening the file directly.</p>`);
       });
   </script>
 </body>
